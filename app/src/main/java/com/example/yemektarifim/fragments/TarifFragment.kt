@@ -19,6 +19,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.navigation.Navigation
 import androidx.room.Room
 import com.example.yemektarifim.R
 import com.example.yemektarifim.databinding.FragmentTarifBinding
@@ -26,6 +27,9 @@ import com.example.yemektarifim.model.Tarif
 import com.example.yemektarifim.roomdb.TarifDao
 import com.example.yemektarifim.roomdb.TarifDatabase
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.ByteArrayOutputStream
 
 
@@ -40,14 +44,20 @@ class TarifFragment : Fragment() {
     //uri yer belirten , kaynagın yerini belirtir
     private var secilenBitmap : Bitmap? = null
     //bitmap uri'yi gorsele cevirir
+    private val mDisposable = CompositeDisposable()
+    //istek yapıldıgında hafızada birikmemesi icin hafızadan temizler
+
     private lateinit var tarifDao : TarifDao
     private lateinit var db : TarifDatabase
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerLauncher()
 
         db = Room.databaseBuilder(requireContext(), TarifDatabase::class.java , "Tarifler").build()
+        tarifDao = db.tarifDao()
 
     }
 
@@ -92,10 +102,27 @@ class TarifFragment : Fragment() {
             val byteDizisi = outputStream.toByteArray()
 
             val tarif = Tarif(isim,malzeme,byteDizisi)
-        }
 
+            //tarifDao.insert(tarif)
+            //threading hatası verir
+            //Rxjava
+
+            mDisposable.add(
+            tarifDao.insert(tarif)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::handleResponseForInsert)
+            )
+        }
+    }
+
+    private  fun handleResponseForInsert(){
+        //onceki fragmenta don
+        val action = TarifFragmentDirections.actionTarifFragmentToListeFragment()
+        Navigation.findNavController(requireView()).navigate(action)
 
     }
+
     fun sil(){
 
     }

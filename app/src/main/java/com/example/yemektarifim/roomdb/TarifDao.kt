@@ -5,18 +5,21 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.yemektarifim.model.Tarif
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+
 
 @Dao
 interface TarifDao {
     @Query("SELECT * FROM Tarif")
-    fun gelAll() : List<Tarif>
+    fun gelAll() : Flowable<List<Tarif>>
 
     @Query("SELECT * FROM Tarif WHERE id = :id")
     fun findById(id : Int) : Tarif
 
     @Insert
-    fun insert(tarif : Tarif)
+    fun insert(tarif : Tarif) : Completable
 
     @Delete
-    fun delete(tarif : Tarif)
+    fun delete(tarif : Tarif) : Completable
 }

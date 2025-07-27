@@ -25,5 +25,8 @@
         <argument
             android:name="id"
             app:argType="integer" />
+        <action
+            android:id="@+id/actionTarifFragmentToListeFragment"
+            app:destination="@id/listeFragment" />
     </fragment>
 </navigation>

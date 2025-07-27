@@ -8,17 +8,25 @@ import android.view.ViewGroup
 import com.example.yemektarifim.R
 import com.example.yemektarifim.databinding.FragmentListeBinding
 import androidx.navigation.Navigation
+import androidx.room.Room
+import com.example.yemektarifim.roomdb.TarifDao
+import com.example.yemektarifim.roomdb.TarifDatabase
 
 
 class ListeFragment : Fragment() {
     private var _binding : FragmentListeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var tarifDao : TarifDao
+    private lateinit var db : TarifDatabase
 
 
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        db = Room.databaseBuilder(requireContext(), TarifDatabase::class.java , "Tarifler").build()
+        tarifDao = db.tarifDao()
 
 
     }
