@@ -10,6 +10,7 @@ import com.example.yemektarifim.databinding.FragmentListeBinding
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
+import com.example.yemektarifim.adapter.TarifAdapter
 import com.example.yemektarifim.model.Tarif
 import com.example.yemektarifim.roomdb.TarifDao
 import com.example.yemektarifim.roomdb.TarifDatabase
@@ -52,6 +53,7 @@ class ListeFragment : Fragment() {
         binding.floatingActionButton2.setOnClickListener{yeniEkle(it)}
 
         binding.tarifRecylerView.layoutManager = LinearLayoutManager(requireContext())
+        verileriAl()
     }
 
     private fun verileriAl(){
@@ -63,6 +65,9 @@ class ListeFragment : Fragment() {
         )
     }
     private fun handleResponse(tarifler : List<Tarif>){
+        val adapter = TarifAdapter(tarifler)
+        binding.tarifRecylerView.adapter = adapter
+
         tarifler.forEach {
             println(it.isim)
             println(it.malzeme)
