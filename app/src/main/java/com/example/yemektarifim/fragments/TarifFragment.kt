@@ -48,6 +48,8 @@ class TarifFragment : Fragment() {
     private val mDisposable = CompositeDisposable()
     //istek yapıldıgında hafızada birikmemesi icin hafızadan temizler
 
+    private var secilenTarif : Tarif? = null
+
     private lateinit var tarifDao : TarifDao
     private lateinit var db : TarifDatabase
 
@@ -111,12 +113,13 @@ class TarifFragment : Fragment() {
         binding.tarifText.setText(tarif.malzeme)
         val bitmap = BitmapFactory.decodeByteArray(tarif.gorsel , 0 , tarif.gorsel.size)
         binding.imageView.setImageBitmap(bitmap)
+        secilenTarif = tarif
 
     }
 
     fun kaydet(){
         val isim = binding.isimText.text.toString()
-        val malzeme = binding.tarifText.toString()
+        val malzeme = binding.tarifText.text.toString()
 
         if(secilenBitmap != null){
             val kucukBitmap = kucukBitmapOlustur(secilenBitmap!! , 300)
@@ -147,6 +150,17 @@ class TarifFragment : Fragment() {
     }
 
     fun sil(){
+        if(secilenTarif != null){
+            mDisposable.add(
+                tarifDao.delete(tarif = secilenTarif!!)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe()
+            )
+            val action = TarifFragmentDirections.actionTarifFragmentToListeFragment()
+            Navigation.findNavController(requireView()).navigate(action)
+
+        }
 
     }
     fun gorselSec(view: View){
