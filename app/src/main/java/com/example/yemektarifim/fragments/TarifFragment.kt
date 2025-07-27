@@ -296,6 +296,8 @@ class TarifFragment : Fragment() {
     override fun onDestroyView(){
         super.onDestroyView()
         _binding = null
+
+        mDisposable.clear()
     }
 
 

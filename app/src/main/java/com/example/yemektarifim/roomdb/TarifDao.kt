@@ -12,7 +12,7 @@ import io.reactivex.rxjava3.core.Flowable
 @Dao
 interface TarifDao {
     @Query("SELECT * FROM Tarif")
-    fun gelAll() : Flowable<List<Tarif>>
+    fun getAll() : Flowable<List<Tarif>>
 
     @Query("SELECT * FROM Tarif WHERE id = :id")
     fun findById(id : Int) : Tarif
