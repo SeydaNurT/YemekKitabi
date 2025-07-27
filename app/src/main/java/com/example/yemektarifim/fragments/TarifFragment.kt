@@ -19,9 +19,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.room.Room
 import com.example.yemektarifim.R
 import com.example.yemektarifim.databinding.FragmentTarifBinding
+import com.example.yemektarifim.model.Tarif
+import com.example.yemektarifim.roomdb.TarifDao
+import com.example.yemektarifim.roomdb.TarifDatabase
 import com.google.android.material.snackbar.Snackbar
+import java.io.ByteArrayOutputStream
 
 
 class TarifFragment : Fragment() {
@@ -35,10 +40,14 @@ class TarifFragment : Fragment() {
     //uri yer belirten , kaynagın yerini belirtir
     private var secilenBitmap : Bitmap? = null
     //bitmap uri'yi gorsele cevirir
+    private lateinit var tarifDao : TarifDao
+    private lateinit var db : TarifDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         registerLauncher()
+
+        db = Room.databaseBuilder(requireContext(), TarifDatabase::class.java , "Tarifler").build()
 
     }
 
@@ -73,6 +82,18 @@ class TarifFragment : Fragment() {
     }
 
     fun kaydet(){
+        val isim = binding.isimText.text.toString()
+        val malzeme = binding.tarifText.toString()
+
+        if(secilenBitmap != null){
+            val kucukBitmap = kucukBitmapOlustur(secilenBitmap!! , 300)
+            val outputStream = ByteArrayOutputStream()
+            kucukBitmap.compress(Bitmap.CompressFormat.PNG , 50 , outputStream)
+            val byteDizisi = outputStream.toByteArray()
+
+            val tarif = Tarif(isim,malzeme,byteDizisi)
+        }
+
 
     }
     fun sil(){
@@ -217,6 +238,32 @@ class TarifFragment : Fragment() {
             }
         }
 
+    }
+
+
+    private fun kucukBitmapOlustur(kullanicininSectigiBitmap : Bitmap ,
+                                   maxBoyut : Int) : Bitmap {
+
+        var width = kullanicininSectigiBitmap.width
+        var height = kullanicininSectigiBitmap.height
+
+        var bitmapOrani : Double = width.toDouble() / height.toDouble()
+
+        if(bitmapOrani > 1 ){
+            //gorsel yatay
+            width= maxBoyut
+            val scaledHeight = width / bitmapOrani
+            height = scaledHeight.toInt()
+        }else{
+            //gorsel dikey
+            height = maxBoyut
+            val scaledWidth = height * bitmapOrani
+            width = scaledWidth.toInt()
+
+        }
+
+
+        return Bitmap.createScaledBitmap(kullanicininSectigiBitmap , width ,height, true)
     }
 
     override fun onDestroyView(){
