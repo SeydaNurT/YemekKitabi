@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
@@ -80,14 +81,36 @@ class TarifFragment : Fragment() {
             val bilgi = TarifFragmentArgs.fromBundle(it).bilgi
 
             if(bilgi== "yeni"){
+                //yeni tarif eklenecek
                 binding.silButton.isEnabled = false
                 binding.kaydetButton.isEnabled = true
+                binding.isimText.setText("")
+                binding.tarifText.setText("")
             }
             else{
+                //eski tarif gosterilecek
                 binding.silButton.isEnabled = true
                 binding.kaydetButton.isEnabled = false
+
+                val id = TarifFragmentArgs.fromBundle(it).id
+
+                mDisposable.add(
+                    tarifDao.findById(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::handleResponse)
+                )
+
+
             }
         }
+
+    }
+    private fun handleResponse(tarif : Tarif){
+        binding.isimText.setText(tarif.isim)
+        binding.tarifText.setText(tarif.malzeme)
+        val bitmap = BitmapFactory.decodeByteArray(tarif.gorsel , 0 , tarif.gorsel.size)
+        binding.imageView.setImageBitmap(bitmap)
 
     }
 
