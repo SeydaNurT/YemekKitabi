@@ -15,7 +15,7 @@ interface TarifDao {
     fun getAll() : Flowable<List<Tarif>>
 
     @Query("SELECT * FROM Tarif WHERE id = :id")
-    fun findById(id : Int) : Tarif
+    fun findById(id : Int) : Flowable<Tarif>
 
     @Insert
     fun insert(tarif : Tarif) : Completable
